@@ -1,0 +1,4 @@
+Python is simple and powerful.
+Python is popular for data analysis.
+Data analysis with Python is useful and practical.
+Simple tools can make data analysis easier.
