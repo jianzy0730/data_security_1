@@ -18,10 +18,13 @@ def configure_output_encoding() -> None:
             stream.reconfigure(encoding="utf-8")
 
 
-def count_words(file_path: Path) -> Counter[str]:
+def count_words(file_path: Path, ignore_case: bool = True) -> Counter[str]:
     """读取文本文件并返回单词频次。"""
     text = file_path.read_text(encoding="utf-8")
-    words = (word.casefold() for word in WORD_PATTERN.findall(text))
+    words = (
+        word.casefold() if ignore_case else word
+        for word in WORD_PATTERN.findall(text)
+    )
     return Counter(words)
 
 
@@ -29,6 +32,11 @@ def parse_args() -> argparse.Namespace:
     """解析命令行参数。"""
     parser = argparse.ArgumentParser(description="统计 txt 文件中的单词频次")
     parser.add_argument("file", nargs="?", help="要统计的 txt 文件路径")
+    parser.add_argument(
+        "--case-sensitive",
+        action="store_true",
+        help="区分大小写统计；默认忽略大小写",
+    )
     return parser.parse_args()
 
 
@@ -48,7 +56,7 @@ def main() -> int:
         return 1
 
     try:
-        word_counts = count_words(file_path)
+        word_counts = count_words(file_path, ignore_case=not args.case_sensitive)
     except UnicodeDecodeError:
         print("错误：文件不是 UTF-8 编码，暂无法读取。", file=sys.stderr)
         return 1
